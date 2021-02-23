@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var inputUnit = 1
     @State private var outputUnit = 4
 
+    let formatter = NumberFormatter()
+
     let units = ["meters", "kilometers", "feet", "yards", "miles", "centimeters"]
 
     var unitSymbols: [String] {
@@ -48,7 +50,7 @@ struct ContentView: View {
                 }
 
                 Section(header: Text("Output")) {
-                    Text("\(outputValue)")
+                    Text("\(formatNumber(number: outputValue))")
 
                     Picker("Input unit", selection: $outputUnit) {
                         ForEach(0 ..< unitSymbols.count) { index in
@@ -59,6 +61,11 @@ struct ContentView: View {
             }
             .navigationBarTitle("Length Converter")
         }
+    }
+
+    func formatNumber(number: Double) -> String {
+        formatter.usesSignificantDigits = true
+        return formatter.string(from: NSNumber(value: number)) ?? ""
     }
 }
 
