@@ -18,16 +18,10 @@ struct ContentView: View {
         case meters, kilometers, feet, yards, miles, centimeters
     }
 
-    var unitSymbols: [String] {
-        Unit.allCases.map { unit in
-            (UnitLength.value(forKey: unit.rawValue) as! UnitLength).symbol
-        }
-    }
-
     var outputValue: Double {
         let inputValue = Double(self.inputValue) ?? 0
-        let inputUnit  = UnitLength.value(forKey: self.inputUnit.rawValue) as! UnitLength
-        let outputUnit = UnitLength.value(forKey: self.outputUnit.rawValue) as! UnitLength
+        let inputUnit  = getUnit(for: self.inputUnit.rawValue)
+        let outputUnit = getUnit(for: self.outputUnit.rawValue)
 
         let inputMeasurement = Measurement(value: inputValue, unit: inputUnit)
         let baseMeasurement = inputMeasurement.converted(to: UnitLength.meters)
@@ -43,8 +37,8 @@ struct ContentView: View {
                     TextField("Input value", text: $inputValue).keyboardType(.decimalPad)
 
                     Picker("Output unit", selection: $inputUnit) {
-                        ForEach(0 ..< unitSymbols.count) { index in
-                            Text("\(self.unitSymbols[index])")
+                        ForEach(Unit.allCases, id: \.self) { unit in
+                            Text("\(getUnit(for: unit.rawValue).symbol)")
                         }
                     }.pickerStyle(SegmentedPickerStyle())
                 }
@@ -53,14 +47,18 @@ struct ContentView: View {
                     Text("\(formatNumber(number: outputValue))")
 
                     Picker("Input unit", selection: $outputUnit) {
-                        ForEach(0 ..< unitSymbols.count) { index in
-                            Text("\(self.unitSymbols[index])")
+                        ForEach(Unit.allCases, id: \.self) { unit in
+                            Text("\(getUnit(for: unit.rawValue).symbol)")
                         }
                     }.pickerStyle(SegmentedPickerStyle())
                 }
             }
             .navigationBarTitle("Length Converter")
         }
+    }
+
+    func getUnit(for key: String) -> UnitLength {
+        UnitLength.value(forKey: key) as! UnitLength
     }
 
     func formatNumber(number: Double) -> String {
