@@ -9,29 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var inputValue = "1"
-    @State private var inputUnit = 1
-    @State private var outputUnit = 4
+    @State private var inputUnit: Unit = .kilometers
+    @State private var outputUnit: Unit = .miles
 
     let formatter = NumberFormatter()
 
-    let units = ["meters", "kilometers", "feet", "yards", "miles", "centimeters"]
+    enum Unit: String, CaseIterable {
+        case meters, kilometers, feet, yards, miles, centimeters
+    }
 
     var unitSymbols: [String] {
-        units.map { unit in
-            (UnitLength.value(forKey: unit) as! UnitLength).symbol
+        Unit.allCases.map { unit in
+            (UnitLength.value(forKey: unit.rawValue) as! UnitLength).symbol
         }
     }
 
     var outputValue: Double {
         let inputValue = Double(self.inputValue) ?? 0
-        let inputUnit  = units[self.inputUnit]
-        let outputUnit = units[self.outputUnit]
+        let inputUnit  = UnitLength.value(forKey: self.inputUnit.rawValue) as! UnitLength
+        let outputUnit = UnitLength.value(forKey: self.outputUnit.rawValue) as! UnitLength
 
-        let inputMeasurement =
-            Measurement(value: inputValue, unit: UnitLength.value(forKey: inputUnit) as! UnitLength)
+        let inputMeasurement = Measurement(value: inputValue, unit: inputUnit)
         let baseMeasurement = inputMeasurement.converted(to: UnitLength.meters)
-        let outputMeasurement =
-            baseMeasurement.converted(to: UnitLength.value(forKey: outputUnit) as! UnitLength)
+        let outputMeasurement = baseMeasurement.converted(to: outputUnit)
 
         return outputMeasurement.value
     }
