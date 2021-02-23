@@ -14,8 +14,10 @@ struct ContentView: View {
 
     let formatter = NumberFormatter()
 
-    enum Unit: String, CaseIterable {
+    enum Unit: String, CaseIterable, Identifiable {
         case meters, kilometers, feet, yards, miles, centimeters
+
+        var id: Unit { self }
     }
 
     var outputValue: Double {
@@ -37,7 +39,7 @@ struct ContentView: View {
                     TextField("Input value", text: $inputValue).keyboardType(.decimalPad)
 
                     Picker("Output unit", selection: $inputUnit) {
-                        ForEach(Unit.allCases, id: \.self) { unit in
+                        ForEach(Unit.allCases) { unit in
                             Text("\(getUnit(for: unit.rawValue).symbol)")
                         }
                     }.pickerStyle(SegmentedPickerStyle())
@@ -47,7 +49,7 @@ struct ContentView: View {
                     Text("\(formatNumber(number: outputValue))")
 
                     Picker("Input unit", selection: $outputUnit) {
-                        ForEach(Unit.allCases, id: \.self) { unit in
+                        ForEach(Unit.allCases) { unit in
                             Text("\(getUnit(for: unit.rawValue).symbol)")
                         }
                     }.pickerStyle(SegmentedPickerStyle())
