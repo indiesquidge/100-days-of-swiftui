@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+// We extend Image instead of View here bc renderingMode only
+// exists on image views and will not compile on a View extension.
+extension Image {
+    struct FlagImage: ViewModifier {
+        func body(content: Content) -> some View {
+            content
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                .shadow(color: Color.orange, radius: 10, x: 5, y: 8)
+        }
+    }
+
+    func flagImage() -> some View {
+        self
+            .renderingMode(.original)
+            .modifier(FlagImage())
+    }
+}
+
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Monaco", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -40,9 +58,7 @@ struct ContentView: View {
                         flagTapped(number)
                     }) {
                         Image(self.countries[number])
-                            .renderingMode(.original)
-                            .clipShape(RoundedRectangle(cornerRadius: 25))
-                            .shadow(color: .orange, radius: 10, x: 5, y: 8)
+                            .flagImage()
                     }
                 }
 
